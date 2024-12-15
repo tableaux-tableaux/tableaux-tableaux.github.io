@@ -1,0 +1,194 @@
+/* General Style */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Open Sans', monospace;
+    color: white;
+    background-color: black;
+/*    overflow: hidden; /* Prevent scrolling */*/
+    height: 100vh; /* Double the viewport height to accommodate the canvas and info section */
+    width: 100vw;
+/*    position: relative;*/
+} 
+
+/* Canvas Style */
+#canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover; /* Ensures the background fills the entire canvas */
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: 1; /* Ensure canvas is behind the toolbar */
+    overflow: hidden;
+}
+
+/* Toolbar Style */
+#toolbar {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    z-index: 2; /* Ensure toolbar is on top */
+    display: flex;
+    gap: 10px;
+}
+
+#toolbar button {
+    background-color: black;
+    color: white;
+    border: 1px solid white;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.3s ease;
+
+}
+
+#toolbar button:hover {
+    background-color: white;
+    color: black;
+}
+
+/* Draggable Items */
+.img-item {
+    max-width: 400px;
+    height: auto;
+    object-fit: contain;
+    cursor: grab;
+    position: absolute;
+    mix-blend-mode: overlay;
+/*    transition: transform 0.3s ease;*/
+    display: block;
+    border:1px dashed white;
+}
+
+
+.img-item:hover {
+mix-blend-mode: lighten;
+z-index: 3; /* Bring the hovered image to the front */
+}
+
+/* Hide toolbar during preview mode */
+#toolbar.hidden {
+    display: none;
+}
+
+/* Exit Preview Button */
+#exitPreview {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background-color: white;
+    color: black;
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: none;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 14px;
+    cursor: pointer;
+    z-index: 1001; /* Ensure it stays on top */
+    display: none; /* Hidden by default */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+#exitPreview:hover {
+    background-color: black;
+    color: white;
+}
+
+#exitPreview.visible {
+    display: block; /* Make it visible in preview mode */
+}
+
+/* Info Section */
+#info {
+    position: absolute; /* Position relative to the viewport */
+    top: 100vh;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+
+    background-color: black;
+    color: white;
+    font-family: 'Open Sans', monospace;
+/*    padding: 50px;*/
+    text-align: center;
+    height: 100vh; /* Full screen height */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+/*    position: relative;*/
+/*    width: 100%;*/
+}
+
+
+#info h1 {
+    font-family: 'Open Sans', monospace;
+    font-size: 36px;
+    margin-bottom: 20px;
+}
+
+#info p {
+    max-width: 80vw;
+    font-size: 16px;
+    line-height: 1.6;
+    margin: 10px 0;
+}
+
+/* Back to Tableaux Button */
+#backToTableauxBtn {
+    position: absolute; /* Place the button within the #info section */
+    bottom: 10%; /* Align at the bottom */
+    right: 5%; /* Align to the right */
+    background-color: black;
+    color: white;
+    border: 1px solid white;
+    border-radius: 5px;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-family: 'Open Sans', monospace;
+    cursor: pointer;
+    transition: 0.3s ease;
+    z-index: 1000;
+
+}
+
+#backToTableauxBtn:hover {
+    background-color: white;
+    color: black;
+}
+
+/* Resize and Rotate Controls */
+.resize-handle,
+.rotate-handle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: white;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 1001;
+}
+
+/* Resize Handle: Bottom-Right Corner */
+.resize-handle {
+    bottom: -5px;
+    right: -5px;
+    cursor: nwse-resize; /* Resize cursor */
+}
+
+/* Rotate Handle: Top-Center */
+.rotate-handle {
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    cursor: grab; /* Drag cursor for rotation */
+}
+
+
+
