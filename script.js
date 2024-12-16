@@ -5,6 +5,8 @@ const clearCanvasBtn = document.getElementById('clearCanvasBtn');
 const infoBtn = document.getElementById('infoBtn');
 const previewBtn = document.getElementById('previewBtn');
 const exitPreviewBtn = document.getElementById('exitPreview');
+const instructionDialog = document.getElementById('instructionDialog');
+const closeDialogBtn = document.getElementById('closeDialogBtn');
 let previewMode = false;
 
 // Image Libraries
@@ -20,8 +22,6 @@ const imageLibrary = [
     'images/andre_fam.png',
     'images/hair-poster-styles.jpg',
     'images/cotton-grass.png'
-
-  
 ];
 
 const backgroundLibrary = [
@@ -40,8 +40,6 @@ const backgroundLibrary = [
     'images/6119-s-vernon-bath.jpg',
     'images/4801-15-w-washington-blvd-livingroom-child-1969.jpg',
     'images/salem-baptist-church-view-of-pews.jpg'
-
-
 ];
 
 // Shuffle Utility
@@ -110,9 +108,6 @@ function loadRandomImages() {
     });
 }
 
-
-
-
 // Change Background
 function changeBackground() {
     const randomBackground =
@@ -141,11 +136,17 @@ function togglePreview() {
         exitPreviewBtn.classList.remove('visible'); // Hide the "Exit Preview" button
     }
 }
+
 // Exit Preview Mode
 exitPreviewBtn.addEventListener('click', () => {
     if (previewMode) {
         togglePreview(); // Exit preview mode
     }
+});
+
+// Close Instruction Dialog
+closeDialogBtn.addEventListener('click', () => {
+    instructionDialog.classList.add('hidden');
 });
 
 

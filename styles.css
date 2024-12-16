@@ -190,5 +190,54 @@ z-index: 3; /* Bring the hovered image to the front */
     cursor: grab; /* Drag cursor for rotation */
 }
 
+/* Instruction Dialog */
+#instructionDialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#instructionDialog.hidden {
+    display: none; /* Hide the dialog by default */
+}
+
+#instructionContent {
+    background-color: black;
+    color: white;
+    padding: 20px;
+    border: 1px dashed white;
+    border-radius: 8px;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Ensure body and canvas occupy the full viewport */
+body, html {
+    height: 100%;
+    margin: 0;
+    overflow: hidden; /* Prevent unintended scrolling */
+}
+
+#canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
 
 
