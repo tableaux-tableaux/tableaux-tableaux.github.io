@@ -417,7 +417,7 @@ clearCanvasBtn.addEventListener('click', clearCanvas);
 
         backgroundImage.src = backgroundURL;
     }, 100); // slight delay for UI update
-});
+
 
 loadRandomImages();
 changeBackground();
