@@ -177,6 +177,8 @@ const imageLibrary = [
     'images/umbrella-boy-dog.png',
     'images/priest.png',
     'images/ebony-fashion-fair.jpg',
+    'images/couple-dancing.png',
+    'images/woman-microscope.png',
 ];
 
 
