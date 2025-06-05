@@ -373,9 +373,6 @@ document.getElementById('backToTableauxBtn').addEventListener('click', () => {
 refreshImagesBtn.addEventListener('click', loadRandomImages);
 changeBackgroundBtn.addEventListener('click', changeBackground);
 clearCanvasBtn.addEventListener('click', clearCanvas);
-saveBtn.addEventListener('click', () => {
-    const toolbar = document.getElementById('toolbar');
-    toolbar.classList.add('hidden');
 
     // Short delay to ensure it's hidden before capture
     setTimeout(() => {
