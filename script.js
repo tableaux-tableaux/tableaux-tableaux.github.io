@@ -1,32 +1,187 @@
+
 const canvas = document.getElementById('canvas');
 const refreshImagesBtn = document.getElementById('refreshImagesBtn');
 const changeBackgroundBtn = document.getElementById('changeBackgroundBtn');
 const clearCanvasBtn = document.getElementById('clearCanvasBtn');
 const infoBtn = document.getElementById('infoBtn');
-const previewBtn = document.getElementById('previewBtn');
-const exitPreviewBtn = document.getElementById('exitPreview');
 const instructionDialog = document.getElementById('instructionDialog');
 const closeDialogBtn = document.getElementById('closeDialogBtn');
-let previewMode = false;
+const saveBtn = document.getElementById('saveBtn');
+saveBtn.addEventListener('click', () => {
+    const toolbar = document.getElementById('toolbar');
+    toolbar.classList.add('hidden');
+
+    setTimeout(() => {
+        const exportCanvas = document.createElement('canvas');
+        exportCanvas.width = drawingCanvas.width;
+        exportCanvas.height = drawingCanvas.height;
+        const exportCtx = exportCanvas.getContext('2d');
+
+        const bgImg = new Image();
+        bgImg.crossOrigin = 'anonymous';
+        bgImg.src = currentBackgroundImage;
+
+        bgImg.onload = () => {
+            exportCtx.drawImage(bgImg, 0, 0, exportCanvas.width, exportCanvas.height);
+
+            const imgElements = Array.from(canvas.querySelectorAll('img'));
+            let loadedCount = 0;
+
+            if (imgElements.length === 0) {
+                drawOverlayAndSave();
+                return;
+            }
+
+            imgElements.forEach(img => {
+                const temp = new Image();
+                temp.crossOrigin = 'anonymous';
+                temp.src = img.src;
+
+                temp.onload = () => {
+                    const canvasRect = canvas.getBoundingClientRect();
+                    const imgRect = img.getBoundingClientRect();
+
+                    const x = imgRect.left - canvasRect.left;
+                    const y = imgRect.top - canvasRect.top;
+
+                    exportCtx.globalCompositeOperation = img.style.mixBlendMode || 'source-over';
+                    exportCtx.drawImage(temp, x, y, img.width, img.height);
+
+                    loadedCount++;
+                    if (loadedCount === imgElements.length) drawOverlayAndSave();
+                };
+
+                temp.onerror = () => {
+                    loadedCount++;
+                    if (loadedCount === imgElements.length) drawOverlayAndSave();
+                };
+            });
+        };
+
+        bgImg.onerror = () => {
+            drawOverlayAndSave(); // fallback if background doesn't load
+        };
+
+        function drawOverlayAndSave() {
+            exportCtx.globalCompositeOperation = 'overlay';
+            exportCtx.drawImage(drawingCanvas, 0, 0);
+
+            const link = document.createElement('a');
+            link.download = 'tableaux-collage.png';
+            link.href = exportCanvas.toDataURL('image/png');
+            link.click();
+
+            toolbar.classList.remove('hidden');
+        }
+    }, 100);
+});
+console.log("Drawing complete, preparing to save.");
+
+
+const toggleDrawBtn = document.getElementById('toggleDrawBtn');
+const colorPicker = document.getElementById('colorPicker');
+const undoBtn = document.getElementById('undoBtn');
+
+let drawingEnabled = false;
+let currentColor = '#ffffff';
+let isDrawing = false;
+let drawingHistory = [];
+
+// Drawing Canvas Setup
+const drawingCanvas = document.getElementById('drawingCanvas');
+const ctx = drawingCanvas.getContext('2d');
+drawingCanvas.width = canvas.offsetWidth;
+drawingCanvas.height = canvas.offsetHeight;
+drawingHistory.push(ctx.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height));
+
+
+window.addEventListener('resize', () => {
+    drawingCanvas.width = canvas.offsetWidth;
+    drawingCanvas.height = canvas.offsetHeight;
+});
+
+// Toggle Drawing Mode
+toggleDrawBtn.addEventListener('click', () => {
+    drawingEnabled = !drawingEnabled;
+    drawingCanvas.style.pointerEvents = drawingEnabled ? 'auto' : 'none';
+    drawingCanvas.style.cursor = drawingEnabled ? 'crosshair' : 'default';
+    toggleDrawBtn.style.backgroundColor = drawingEnabled ? 'white' : 'black';
+    toggleDrawBtn.style.color = drawingEnabled ? 'black' : 'white';
+});
+
+// Color Picker
+colorPicker.addEventListener('input', e => {
+    currentColor = e.target.value;
+});
+
+// Undo Button
+undoBtn.addEventListener('click', () => {
+    if (drawingHistory.length > 0) {
+        const previousState = drawingHistory.pop();
+        ctx.putImageData(previousState, 0, 0);
+    }
+});
+
+// Drawing Events
+drawingCanvas.addEventListener('mousedown', e => {
+    if (!drawingEnabled) return;
+    isDrawing = true;
+    ctx.beginPath();
+    ctx.moveTo(e.offsetX, e.offsetY);
+});
+
+drawingCanvas.addEventListener('mousemove', e => {
+    if (!isDrawing || !drawingEnabled) return;
+    ctx.lineTo(e.offsetX, e.offsetY);
+ctx.strokeStyle = currentColor;
+ctx.lineWidth = 4;
+ctx.lineCap = 'round';
+ctx.lineJoin = 'round';
+
+// 🌟 Glow effect
+ctx.shadowBlur = 10;
+ctx.shadowColor = currentColor;
+
+ctx.stroke();
+
+});
+
+drawingCanvas.addEventListener('mouseup', () => {
+    isDrawing = false;
+
+    if (drawingEnabled) {
+        drawingHistory.push(ctx.getImageData(0, 0, drawingCanvas.width, drawingCanvas.height));
+        if (drawingHistory.length > 30) {
+            drawingHistory.shift();
+        }
+    }
+});
 
 // Image Libraries
 const imageLibrary = [
-    'images/breanna35.jpg',
-    'images/rustybrown-stripe-tile.jpg',
+    'images/harpercourt-girls-undated.jpg',
     'images/lips.jpg',
-    'images/pinkdottile.jpg',
     'images/lips-text.jpg',
-    'images/rclaim-sage-tile.jpg',
-    'images/moon-floor.png',
-    'images/xray-chest-front.png',
-    'images/andre_fam.png',
-    'images/hair-poster-styles.jpg',
-    'images/cotton-grass.png'
+    'images/luvs.png',
+    'images/eye-makeup.jpg',
+    'images/royal woman.png',
+    'images/bob-marley-casket.jpg',
+    'images/hands.jpg',
+    'images/lady in red.png',
+    'images/girls-jumping-rope.jpg',
+    'images/black-carpet-text.jpg',
+    'images/pleasure.png',
+    'images/goodtimes.jpg',
+    'images/black-diva.jpg',
+    'images/murrays.jpg',
+    'images/umbrella-boy-dog.png',
+    'images/priest.png',
+    'images/ebony-fashion-fair.jpg',
 ];
+
 
 const backgroundLibrary = [
     'images/5042-5052-s-drexel.jpg',
-    'images/harpercourt-girls-undated.jpg',
     'images/5042-5052SDrexel-undated.jpg',
     'images/5626-s-kimbark-kitchen.jpg',
     'images/harpercourt-shop.jpg',
@@ -52,124 +207,218 @@ function shuffle(array) {
 }
 
 function loadRandomImages() {
-    canvas.innerHTML = ''; // Clear existing images
+    canvas.innerHTML = '';
     const shuffledImages = shuffle([...imageLibrary]);
+    const blendModes = ['hard-light', 'overlay', 'lighten', 'multiply'];
 
     shuffledImages.slice(0, 6).forEach(src => {
         const img = document.createElement('img');
         img.src = src;
         img.className = 'img-item';
 
-        // Set Random Dimensions
-        const maxWidth = 300; // Maximum width for images
-        const randomScale = Math.random() * 0.5 + 0.5; // Random scale between 0.5 and 1
-        const randomWidth = maxWidth * randomScale; // Calculate random width
-        img.style.width = `${randomWidth}px`; // Set random width
-        img.style.height = 'auto'; // Maintain aspect ratio
+        const maxWidth = 300;
+        const randomScale = Math.random() * 0.5 + 0.5;
+        const randomWidth = maxWidth * randomScale;
+        img.style.width = `${randomWidth}px`;
+        img.style.height = 'auto';
 
-        // Random initial placement
-        img.style.left = `${Math.random() * (canvas.offsetWidth - randomWidth)}px`;
-        img.style.top = `${Math.random() * (canvas.offsetHeight - randomWidth)}px`;
+        const left = Math.random() * (canvas.offsetWidth - randomWidth);
+        const top = Math.random() * (canvas.offsetHeight - randomWidth);
+        const blendMode = blendModes[Math.floor(Math.random() * blendModes.length)];
+        img.style.mixBlendMode = blendMode;
 
-        // Drag-and-Drop Logic
+        // Create wrapper
+        const wrapper = document.createElement('div');
+        img.classList.add('drifting'); // 
+        img.style.animationDelay = `${Math.random() * 10}s`;
+        wrapper.className = 'img-wrapper drifting';
+        wrapper.style.position = 'absolute';
+        wrapper.style.left = `${left}px`;
+        wrapper.style.top = `${top}px`;
+        wrapper.style.width = `${randomWidth}px`;
+        wrapper.style.height = `${img.offsetHeight}px`;
+        wrapper.style.userSelect = 'none';
+
+        // Prevent browser drag/select
+        img.draggable = false;
+        img.style.userSelect = 'none';
+
+        img.style.position = 'relative';
+        img.style.left = '0px';
+        img.style.top = '0px';
+
+        // Resize handle
+        const handle = document.createElement('div');
+        handle.className = 'resize-handle';
+        handle.style.display = 'none';
+
+        // Show/hide handle on hover
+        wrapper.addEventListener('mouseenter', () => {
+            handle.style.display = 'block';
+        });
+        wrapper.addEventListener('mouseleave', () => {
+            handle.style.display = 'none';
+        });
+
+        // Resize logic
+        let isResizing = false;
+        handle.addEventListener('mousedown', e => {
+            e.stopPropagation();
+            isResizing = true;
+
+            const startX = e.clientX;
+            const startWidth = img.offsetWidth;
+
+            const onMouseMove = e => {
+                if (!isResizing) return;
+                const dx = e.clientX - startX;
+                const newWidth = Math.max(50, startWidth + dx);
+                img.style.width = `${newWidth}px`;
+
+                // Update wrapper size to match image
+                requestAnimationFrame(() => {
+                    const newHeight = img.offsetHeight;
+                    wrapper.style.width = `${newWidth}px`;
+                    wrapper.style.height = `${newHeight}px`;
+                });
+            };
+
+            const onMouseUp = () => {
+                isResizing = false;
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            };
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+
+        // Drag logic
         let isDragging = false;
-        let moveImage; // Function reference for cleanup
+        let moveWrapper;
 
-        // Click to Pick Up or Drop
-        img.addEventListener('click', e => {
-            isDragging = !isDragging; // Toggle dragging state
+        wrapper.addEventListener('click', e => {
+            isDragging = !isDragging;
 
             if (isDragging) {
-                img.style.cursor = 'grabbing';
-                img.style.zIndex = 1000; // Bring the image to the front
+                wrapper.style.cursor = 'grabbing';
+                wrapper.style.zIndex = 1000;
 
-                // Function to move the image with the cursor
-                moveImage = e => {
+                moveWrapper = e => {
                     const rect = canvas.getBoundingClientRect();
-                    const x = e.clientX - rect.left - img.offsetWidth / 2;
-                    const y = e.clientY - rect.top - img.offsetHeight / 2;
+                    const x = e.clientX - rect.left - wrapper.offsetWidth / 2;
+                    const y = e.clientY - rect.top - wrapper.offsetHeight / 2;
 
-                    img.style.position = 'absolute';
-                    img.style.left = `${x}px`;
-                    img.style.top = `${y}px`;
+                    wrapper.style.left = `${x}px`;
+                    wrapper.style.top = `${y}px`;
                 };
 
-                document.addEventListener('mousemove', moveImage);
+                document.addEventListener('mousemove', moveWrapper);
             } else {
-                img.style.cursor = 'grab';
-                img.style.zIndex = ''; // Reset z-index
-
-                // Stop moving the image
-                document.removeEventListener('mousemove', moveImage);
+                wrapper.style.cursor = 'grab';
+                wrapper.style.zIndex = '';
+                document.removeEventListener('mousemove', moveWrapper);
             }
         });
 
-        canvas.appendChild(img);
+        // Assemble
+        wrapper.appendChild(img);
+        wrapper.appendChild(handle);
+        canvas.appendChild(wrapper);
     });
 }
 
-// Change Background
+
+
+
+
+
+let currentBackgroundImage = null;
+
 function changeBackground() {
-    const randomBackground =
-        backgroundLibrary[Math.floor(Math.random() * backgroundLibrary.length)];
+    const randomBackground = backgroundLibrary[Math.floor(Math.random() * backgroundLibrary.length)];
+    currentBackgroundImage = randomBackground; // ✅ store it
     canvas.style.backgroundImage = `url(${randomBackground})`;
     canvas.style.backgroundSize = 'cover';
     canvas.style.backgroundPosition = 'center';
     canvas.style.backgroundRepeat = 'no-repeat';
 }
 
-// Clear Canvas
+
 function clearCanvas() {
-    canvas.innerHTML = ''; // Removes all draggable items
+    canvas.innerHTML = '';
+    ctx.clearRect(0, 0, drawingCanvas.width, drawingCanvas.height);
+    drawingHistory = [];
 }
 
-// Toggle Preview Mode
-function togglePreview() {
-    const toolbar = document.getElementById('toolbar');
-    previewMode = !previewMode;
 
-    if (previewMode) {
-        toolbar.classList.add('hidden');
-        exitPreviewBtn.classList.add('visible'); // Show the "Exit Preview" button
-    } else {
-        toolbar.classList.remove('hidden');
-        exitPreviewBtn.classList.remove('visible'); // Hide the "Exit Preview" button
-    }
-}
-
-// Exit Preview Mode
-exitPreviewBtn.addEventListener('click', () => {
-    if (previewMode) {
-        togglePreview(); // Exit preview mode
-    }
-});
-
-// Close Instruction Dialog
 closeDialogBtn.addEventListener('click', () => {
     instructionDialog.classList.add('hidden');
 });
 
-
-// Smooth scroll to the info section
-document.getElementById('infoBtn').addEventListener('click', () => {
+infoBtn.addEventListener('click', () => {
     document.getElementById('info').scrollIntoView({
         behavior: 'smooth'
     });
 });
 
-// Scroll back to the collage maker section
 document.getElementById('backToTableauxBtn').addEventListener('click', () => {
     document.getElementById('canvas').scrollIntoView({
         behavior: 'smooth'
     });
 });
 
-// Button Events
 refreshImagesBtn.addEventListener('click', loadRandomImages);
 changeBackgroundBtn.addEventListener('click', changeBackground);
 clearCanvasBtn.addEventListener('click', clearCanvas);
-previewBtn.addEventListener('click', togglePreview);
+saveBtn.addEventListener('click', () => {
+    const toolbar = document.getElementById('toolbar');
+    toolbar.classList.add('hidden');
 
-// Initial Load
+    // Short delay to ensure it's hidden before capture
+    setTimeout(() => {
+        // Create a temp canvas
+        const exportCanvas = document.createElement('canvas');
+        exportCanvas.width = drawingCanvas.width;
+        exportCanvas.height = drawingCanvas.height;
+        const exportCtx = exportCanvas.getContext('2d');
+
+        // Draw background image (set on #canvas)
+        const backgroundImage = new Image();
+        const bgStyle = getComputedStyle(canvas);
+        const backgroundURL = bgStyle.backgroundImage.slice(5, -2); // remove url("...")
+
+        backgroundImage.onload = () => {
+            exportCtx.drawImage(backgroundImage, 0, 0, exportCanvas.width, exportCanvas.height);
+
+            // Draw all images on canvas
+            const images = canvas.querySelectorAll('img');
+            images.forEach(img => {
+                const rect = img.getBoundingClientRect();
+                const canvasRect = canvas.getBoundingClientRect();
+                const x = rect.left - canvasRect.left;
+                const y = rect.top - canvasRect.top;
+                exportCtx.globalCompositeOperation = img.style.mixBlendMode || 'source-over';
+                exportCtx.drawImage(img, x, y, img.width, img.height);
+            });
+
+            // Draw the drawing canvas (preserves overlay effect)
+            exportCtx.globalCompositeOperation = 'overlay';
+            exportCtx.drawImage(drawingCanvas, 0, 0);
+
+            // Save image
+            const link = document.createElement('a');
+            link.download = 'tableaux-collage.png';
+            link.href = exportCanvas.toDataURL('image/png');
+            link.click();
+
+            // Restore toolbar
+            toolbar.classList.remove('hidden');
+        };
+
+        backgroundImage.src = backgroundURL;
+    }, 100); // slight delay for UI update
+});
+
 loadRandomImages();
 changeBackground();

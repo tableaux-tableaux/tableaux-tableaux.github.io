@@ -9,13 +9,13 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&family=Rubik:wght@900&display=swap" rel="stylesheet">
 </head>
-<body>
+<body> 
     <!-- Instruction Dialogue Box -->
     <div id="instructionDialog">
         <div id="instructionContent">
             <p>Welcome to Tableaux Tableaux! Here's how to use the collage maker:</p>
             <ul>
-                <li>Pick up and drop images with a click.</li>
+                <li>Click to pick up and drop images.</li>
                 <li>Use the toolbar to refresh images, change the background, or clear the canvas.</li>
                 <li>Click "Preview" to see your collage without the interface.</li>
                 <li>Explore and enjoy crafting your own tableaux!</li>
@@ -25,16 +25,22 @@
     </div>
 
     <div id="canvas">
+
         <!-- The main area for interaction -->
     </div>
+       <canvas id="drawingCanvas"></canvas>
     <div id="toolbar">
         <button id="refreshImagesBtn">refresh images</button>
         <button id="changeBackgroundBtn">change background</button>
         <button id="clearCanvasBtn">clear canvas</button>
-        <button id="previewBtn">preview</button>
+        <button id="toggleDrawBtn">draw</button>
+        <input type="color" id="colorPicker" value="#ffffff" title="Choose drawing color">
+        <button id="undoBtn">undo</button>
         <button id="infoBtn">info</button>
+        <button id="saveBtn">save</button>
+        
+
     </div>
-    <div id="exitPreview" class="hidden">Exit Preview</div>
 
      <!-- Info Section -->
     <section id="info">

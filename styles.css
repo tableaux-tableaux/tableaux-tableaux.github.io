@@ -23,6 +23,7 @@ body {
     background-repeat: no-repeat;
     z-index: 1; /* Ensure canvas is behind the toolbar */
     overflow: hidden;
+/*    filter: contrast(115%) brightness(1.5);*/
 }
 
 /* Toolbar Style */
@@ -30,7 +31,7 @@ body {
     position: absolute;
     bottom: 20px;
     right: 20px;
-    z-index: 2; /* Ensure toolbar is on top */
+    z-index: 20; /* Ensure toolbar is on top */
     display: flex;
     gap: 10px;
 }
@@ -62,7 +63,7 @@ body {
     mix-blend-mode: overlay;
 /*    transition: transform 0.3s ease;*/
     display: block;
-    border:1px dashed white;
+/*    border:1px dashed white;*/
 }
 
 
@@ -237,6 +238,69 @@ body, html {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+}
+#drawingCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10;
+    pointer-events: none;
+    mix-blend-mode: overlay;
+}
+
+#colorPicker {
+    appearance: none;
+    background-color: black;
+    border: 1px solid white;
+    border-radius: 5px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    padding: 0;
+}
+#colorPicker::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+#colorPicker::-webkit-color-swatch {
+    border: none;
+    border-radius: 5px;
+}
+
+.img-wrapper {
+    position: absolute;
+    display: inline-block;
+}
+
+.img-wrapper,
+.img-wrapper * {
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.resize-handle {
+    position: absolute;
+    bottom: -6px;
+    right: -6px;
+    width: 10px;
+    height: 10px;
+    background-color: black;
+    border-radius: 50%;
+    border: 1px solid white;
+    cursor: nwse-resize;
+    z-index: 10;
+}
+
+@keyframes drift {
+    0%, 100% { transform: translate(0, 0); }
+    25% { transform: translate(2px, -2px); }
+    50% { transform: translate(-3px, 4px); }
+    75% { transform: translate(0.5px, -0.5px); }
+}
+
+.img-wrapper img.drifting {
+    animation: drift 12s ease-in-out infinite;
 }
 
 
