@@ -374,49 +374,7 @@ refreshImagesBtn.addEventListener('click', loadRandomImages);
 changeBackgroundBtn.addEventListener('click', changeBackground);
 clearCanvasBtn.addEventListener('click', clearCanvas);
 
-    // Short delay to ensure it's hidden before capture
-    setTimeout(() => {
-        // Create a temp canvas
-        const exportCanvas = document.createElement('canvas');
-        exportCanvas.width = drawingCanvas.width;
-        exportCanvas.height = drawingCanvas.height;
-        const exportCtx = exportCanvas.getContext('2d');
-
-        // Draw background image (set on #canvas)
-        const backgroundImage = new Image();
-        const bgStyle = getComputedStyle(canvas);
-        const backgroundURL = bgStyle.backgroundImage.slice(5, -2); // remove url("...")
-
-        backgroundImage.onload = () => {
-            exportCtx.drawImage(backgroundImage, 0, 0, exportCanvas.width, exportCanvas.height);
-
-            // Draw all images on canvas
-            const images = canvas.querySelectorAll('img');
-            images.forEach(img => {
-                const rect = img.getBoundingClientRect();
-                const canvasRect = canvas.getBoundingClientRect();
-                const x = rect.left - canvasRect.left;
-                const y = rect.top - canvasRect.top;
-                exportCtx.globalCompositeOperation = img.style.mixBlendMode || 'source-over';
-                exportCtx.drawImage(img, x, y, img.width, img.height);
-            });
-
-            // Draw the drawing canvas (preserves overlay effect)
-            exportCtx.globalCompositeOperation = 'overlay';
-            exportCtx.drawImage(drawingCanvas, 0, 0);
-
-            // Save image
-            const link = document.createElement('a');
-            link.download = 'tableaux-collage.png';
-            link.href = exportCanvas.toDataURL('image/png');
-            link.click();
-
-            // Restore toolbar
-            toolbar.classList.remove('hidden');
-        };
-
-        backgroundImage.src = backgroundURL;
-    }, 100); // slight delay for UI update
+    
 
 
 loadRandomImages();
